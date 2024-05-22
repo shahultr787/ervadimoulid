@@ -14,7 +14,7 @@ app.post('/categories', async (req, res) => {
     const data = await fs.readFile('db.json', 'utf-8');
     const db = JSON.parse(data);
 
-    // Extract category details from the request body
+    // Extract category details from the request bodyyyy
     const { name, image } = req.body;
 
     // Create a new category object
