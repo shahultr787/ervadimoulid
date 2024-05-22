@@ -20,8 +20,8 @@ app.post('/categories', async (req, res) => {
     // Create a new category object
     const newCategory = { name, image };
 
-    // Add the new category to the categories array
-    db.categories.push(newCategory);
+    // Add the new category to the posts array
+    db.posts.push(newCategory);
 
     // Write the updated database back to the file
     await fs.writeFile('db.json', JSON.stringify(db, null, 2));
@@ -35,7 +35,7 @@ app.post('/categories', async (req, res) => {
   }
 });
 
-// Endpoint to view saved items/categories
+// Endpoint to retrieve the list of categories
 app.get('/categories', async (req, res) => {
   try {
     // Read the existing database file
@@ -43,7 +43,7 @@ app.get('/categories', async (req, res) => {
     const db = JSON.parse(data);
 
     // Respond with the list of categories
-    res.status(200).json(db.categories);
+    res.status(200).json(db.posts);
   } catch (error) {
     console.error('Error fetching categories:', error);
     // Respond with error message
