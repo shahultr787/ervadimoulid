@@ -1,54 +1,29 @@
 const express = require('express');
-const fs = require('fs').promises;
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-const PORT = 3100;
+const PORT = 3200;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// Endpoint to create a category
-app.post('/categories', async (req, res) => {
-  try {
-    // Read the existing database file
-    const data = await fs.readFile('db.json', 'utf-8');
-    const db = JSON.parse(data);
+// Endpoint to download a zip file from the server
+app.get('/download', (req, res) => {
+  const zipFilePath = path.join(__dirname, 'dwn.zip'); // Path to your zip file
 
-    // Extract category details from the request bodyyyy
-    const { name, image } = req.body;
-
-    // Create a new category object
-    const newCategory = { name, image };
-
-    // Add the new category to the posts array
-    db.posts.push(newCategory);
-
-    // Write the updated database back to the file
-    await fs.writeFile('db.json', JSON.stringify(db, null, 2));
-
-    // Respond with success message
-    res.status(201).json({ message: 'Category created successfully', category: newCategory });
-  } catch (error) {
-    console.error('Error adding category:', error);
-    // Respond with error message
-    res.status(500).json({ message: 'Internal server error' });
+  // Validate if the file exists
+  if (!fs.existsSync(zipFilePath)) {
+    return res.status(404).json({ message: 'File not found' });
   }
-});
 
-// Endpoint to retrieve the list of categories
-app.get('/categories', async (req, res) => {
-  try {
-    // Read the existing database file
-    const data = await fs.readFile('db.json', 'utf-8');
-    const db = JSON.parse(data);
-
-    // Respond with the list of categories
-    res.status(200).json(db.posts);
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    // Respond with error message
-    res.status(500).json({ message: 'Internal server error' });
-  }
+  // Set the response headers to prompt the user to download the file
+  res.download(zipFilePath, 'dwn.zip', (err) => {
+    if (err) {
+      console.error('Error downloading the file:', err);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
 });
 
 // Start the server
